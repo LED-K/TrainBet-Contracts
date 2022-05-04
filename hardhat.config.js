@@ -32,8 +32,15 @@ module.exports = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    mumbai:{
+      url:'https://matic-mumbai.chainstacklabs.com',
+      accounts: [process.env.PRIVATE_KEY], 
+      gas:3100000,
+      gasPrice:9000000000
+    },
     iExecSidechain: {
       url: "https://viviani.iex.ec",
+      chainId : 133,
       gasPrice: 0,
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : []
     },

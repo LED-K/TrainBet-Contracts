@@ -1,6 +1,6 @@
-![Flight pronostics logo](https://user-images.githubusercontent.com/27382420/141027609-e0b06221-b7c6-4389-9c5d-afa6ceeaaf1b.png)
 
-# Advanced Flight Pronostics Hardhat Project
+
+# Train Journey Pronostic app
 
 This project demonstrates an advanced Oracle use case, integrating tools commonly used alongside Hardhat in the ecosystem.
 
@@ -31,7 +31,9 @@ npx solhint 'contracts/**/*.sol' --fix
 
 # Smart Contracts deployments
 
-So After you get your account whitelisted to deploy on iExec Sidechain you have to modify the .env.template file to a file named .env, and then edit it to fill in the details. Enter your the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
+So After you get your account whitelisted to deploy on iExec Sidechain you have to modify the .env.template file to a file named .env, and then edit it to fill in the details. Enter your the private key of the account which will send the deployment transaction.
+Same goes for contract verification, you'll need to provide your Etherscan Api key in the .env file
+ With a valid .env file in place, first deploy your contract:
 
 ```shell
 hardhat run --network iExecSidechain scripts/deploy.js

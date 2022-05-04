@@ -20,13 +20,14 @@ pragma solidity ^0.6.12;
 
 import "./Oracle.sol";
 
-contract FlightBetting {
+contract TrainBetting {
     string public status;
     uint256 public updatedate;
+    string public OK = "OK";
+    string public SCHEDULED = "Scheduled";
 
-    string constant SCHEDULED = "scheduled";
-    string constant ACTIVE = "active";
-    string constant LANDED = "landed";
+    //Departure DateTime Unix format
+    uint256 departure = 1652164800;
 
     uint256 public minimumBet;
     uint256 public totalBetsOnAsPlanned;
@@ -37,6 +38,7 @@ contract FlightBetting {
         uint256 amountBet;
         uint16 betSelection;
     }
+
     // The address of the player and => the user info
     mapping(address => Player) public playerInfo;
 
@@ -81,20 +83,16 @@ contract FlightBetting {
         getOracleData();
         //Require to check whether the Flight is still scheduled or not
         require(
-            !(keccak256(abi.encodePacked(status)) ==
-                keccak256(abi.encodePacked(SCHEDULED))),
-            "Flight Still Scheduled"
+            !(keccak256(bytes(status)) == keccak256(bytes(SCHEDULED))),
+            "Train journey Still Scheduled"    
         );
 
         uint16 winnerpartselected;
         //We test if the current status is a win for the first selection or the second selection
-        //So if the status is active or landed this means the flight took off as planned(first selection wins)
-        //else the flight was canceled or diverted(second slection wins).
+        // if the status is equal to an empty string it means that the train journey didn't have any delay or issue, this means the train journey went as planned(first selection wins)
+        //else the train journey was canceled or diverted(second slection wins).
         if (
-            (keccak256(abi.encodePacked(status)) ==
-                keccak256(abi.encodePacked(ACTIVE))) ||
-            (keccak256(abi.encodePacked(status)) ==
-                keccak256(abi.encodePacked(LANDED)))
+            (keccak256(bytes(status)) == keccak256(bytes(OK)))
         ) {
             winnerpartselected = 1;
         } else {
@@ -155,13 +153,28 @@ contract FlightBetting {
 
     function getOracleData() public returns (string memory) {
         
-        bytes32 oracleId = 0x80264cd4eea1848b0ee4d8ed1ff9cecdf18112eac81e25dd81a63f73ed13a6b6;
+        bytes32 oracleId = 0x56fd879bf2f20477ad163cf0b4bb3eb58bfff6af17b04ba5b277af13362547b4;
         address oracleAddress = 0x8ecEDdd1377E52d23A46E2bd3dF0aFE35B526D5F;
         Oracle oracleContract = Oracle(oracleAddress);
         (string memory value, uint256 date) = oracleContract.getString(
             oracleId
         );
-        status = value;
+        bytes memory converted = bytes(value);
+        //Get current DateTime
+        uint today = block.timestamp;
+        //If we're still before departure date, we set the status to scheduled
+        //Else this means that the train leaved as planned
+        //!!! this is needed because the sncf api will return an empty string wether the journey
+        //is still scheduled or if ti happened as planned!!!!
+        if(converted.length == 0){
+            if(today <= departure){
+                status = SCHEDULED;
+            }else{
+                status= OK;
+            }
+        }else{
+            status = value;
+        }
         updatedate = date;
         return value;
     }

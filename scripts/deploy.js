@@ -11,7 +11,7 @@ const main = async () => {
   console.log("\n\n 📡 Deploying...\n");
 
   
-  const betting = await deploy("FlightBetting");
+  const betting = await deploy("TrainBetting");
   
  
 
